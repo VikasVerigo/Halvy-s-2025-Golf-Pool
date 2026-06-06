@@ -1,843 +1,386 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OAD Golf Pool 2026</title>
-    <style>
-        :root {
-            --green-dark : #145214;
-            --green      : #1b5e20;
-            --green-mid  : #2e7d32;
-            --green-light: #388e3c;
-            --accent     : #f9a825;
-            --accent-dim : #fdd835;
-            --surface    : #ffffff;
-            --bg         : #f1f8e9;
-            --border     : #c8e6c9;
-            --text       : #212121;
-            --muted      : #757575;
-            --shadow     : 0 2px 10px rgba(0,0,0,0.10);
-            --radius     : 10px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Halvy &amp; Franco's Golf Pool - 2026</title>
+<style>
+  :root {
+    --green:  #1a5c2e;
+    --gold:   #c9a227;
+    --light:  #f4f9f4;
+    --border: #d0ddd0;
+    --text:   #1a1a1a;
+    --muted:  #666;
+    --row-alt:#eef4ee;
+    --win:    #fff8e1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--light); color: var(--text); }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  /* ── Header ── */
+  header { background: var(--green); color: #fff; padding: 18px 24px; display: flex; align-items: center; gap: 16px; }
+  header h1 { font-size: 1.4rem; font-weight: 700; }
+  header span { font-size: 0.9rem; opacity: .75; margin-left: auto; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            font-size: 15px;
-            line-height: 1.5;
-        }
+  /* ── Tabs ── */
+  nav { background: #fff; border-bottom: 2px solid var(--border); display: flex; padding: 0 16px; }
+  nav button {
+    background: none; border: none; padding: 14px 20px; cursor: pointer;
+    font-size: 0.95rem; color: var(--muted); font-weight: 500; border-bottom: 3px solid transparent;
+    transition: color .2s, border-color .2s;
+  }
+  nav button.active { color: var(--green); border-bottom-color: var(--gold); }
+  nav button:hover { color: var(--green); }
 
-        /* ─── HEADER ─── */
-        header {
-            background: linear-gradient(135deg, var(--green-dark) 0%, var(--green-mid) 100%);
-            color: #fff;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.35);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        .hdr-icon { font-size: 2.2rem; flex-shrink: 0; }
-        .hdr-text h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: 0.2px; }
-        .hdr-text p  { font-size: 0.76rem; opacity: 0.78; margin-top: 2px; }
-        .hdr-right {
-            margin-left: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 4px;
-        }
-        #last-updated { font-size: 0.7rem; opacity: 0.72; }
-        .btn-refresh {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: #fff;
-            padding: 3px 10px;
-            border-radius: 5px;
-            font-size: 0.72rem;
-            cursor: pointer;
-            transition: background 0.18s;
-        }
-        .btn-refresh:hover { background: rgba(255,255,255,0.28); }
+  /* ── Panels ── */
+  .panel { display: none; padding: 20px 16px; max-width: 1400px; margin: 0 auto; }
+  .panel.active { display: block; }
 
-        /* ─── NAV ─── */
-        nav {
-            background: var(--green-light);
-            display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        nav::-webkit-scrollbar { display: none; }
-        .tab-btn {
-            color: rgba(255,255,255,0.72);
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            padding: 0.7rem 1.15rem;
-            font-size: 0.86rem;
-            font-weight: 500;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: color 0.15s, border-color 0.15s, background 0.15s;
-        }
-        .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.08); }
-        .tab-btn.active { color: #fff; border-bottom-color: var(--accent); }
+  /* ── Tables ── */
+  .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.88rem; }
+  thead th { background: var(--green); color: #fff; padding: 10px 12px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
+  thead th.num { text-align: right; }
+  tbody tr:nth-child(even) { background: var(--row-alt); }
+  tbody tr:hover { background: #dff0df; }
+  tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody td.zero { color: #bbb; }
 
-        /* ─── LAYOUT ─── */
-        main { max-width: 1100px; margin: 0 auto; padding: 1.4rem 1rem; }
-        .tab-pane { display: none; }
-        .tab-pane.active { display: block; }
+  /* Rank medal colours */
+  .rank-1 { color: #c9a227; font-weight: 700; }
+  .rank-2 { color: #888; font-weight: 700; }
+  .rank-3 { color: #a0522d; font-weight: 700; }
 
-        /* ─── STAT STRIP ─── */
-        .stat-strip {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 0.9rem;
-            margin-bottom: 1.4rem;
-        }
-        .stat-box {
-            background: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 0.9rem 1rem;
-            text-align: center;
-            border-top: 4px solid var(--green);
-        }
-        .stat-box.gold { border-top-color: var(--accent); }
-        .stat-box .val { font-size: 1.6rem; font-weight: 700; color: var(--green); line-height: 1.1; }
-        .stat-box.gold .val { color: #c77700; }
-        .stat-box .lbl { font-size: 0.7rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  /* ── Toggle (payouts) ── */
+  .toggle-bar { display: flex; gap: 8px; margin-bottom: 16px; }
+  .toggle-bar button {
+    padding: 8px 18px; border-radius: 20px; border: 2px solid var(--green);
+    background: #fff; color: var(--green); cursor: pointer; font-weight: 600; font-size: 0.88rem;
+    transition: background .15s, color .15s;
+  }
+  .toggle-bar button.active { background: var(--green); color: #fff; }
 
-        /* ─── CARD ─── */
-        .card {
-            background: var(--surface);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            margin-bottom: 1.4rem;
-        }
-        .card-hdr {
-            background: var(--green);
-            color: #fff;
-            padding: 0.65rem 1rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        .card-body { padding: 0; }
+  /* ── Weekly Winners ── */
+  .ww-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .ww-card {
+    background: #fff; border-radius: 10px; padding: 16px 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08); border-left: 5px solid var(--green);
+  }
+  .ww-card.no-pick { border-left-color: #ccc; }
+  .ww-card .wk { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+  .ww-card .tourney { font-size: 1rem; font-weight: 700; margin: 2px 0 6px; }
+  .ww-card .winner-name { color: var(--green); font-weight: 600; }
+  .ww-card .bonus { font-size: 0.85rem; color: var(--gold); font-weight: 700; margin-top: 6px; }
+  .ww-card .pickers { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+  .ww-card .no-winner-label { font-size: 0.85rem; color: #aaa; font-style: italic; margin-top: 4px; }
 
-        /* ─── TABLES ─── */
-        .tbl-wrap { overflow-x: auto; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.86rem;
-        }
-        thead th {
-            background: #e8f5e9;
-            color: var(--green-dark);
-            font-weight: 700;
-            padding: 0.6rem 0.85rem;
-            text-align: left;
-            border-bottom: 2px solid var(--border);
-            white-space: nowrap;
-            position: sticky;
-            top: 0;
-        }
-        tbody td {
-            padding: 0.52rem 0.85rem;
-            border-bottom: 1px solid #e8f5e9;
-            vertical-align: middle;
-        }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover td { background: #f9fbe7; }
+  /* ── Sortable headers ── */
+  thead th.sortable { cursor: pointer; user-select: none; }
+  thead th.sortable:hover { background: #14482400; filter: brightness(1.2); }
+  thead th .sort-icon { margin-left: 4px; opacity: .5; font-size: 0.75em; }
+  thead th.sort-asc .sort-icon::after { content: ' ▲'; opacity: 1; }
+  thead th.sort-desc .sort-icon::after { content: ' ▼'; opacity: 1; }
+  thead th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ⇅'; }
 
-        /* column helpers */
-        .c-ctr   { text-align: center; }
-        .c-right { text-align: right; }
-        .c-name  { font-weight: 600; }
-        .c-total { text-align: right; font-weight: 700; color: var(--green-dark); }
-        .c-rank  { text-align: center; width: 44px; font-weight: 700; }
+  /* ── Pick+earnings cell ── */
+  .pick-cell { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; }
+  .pick-player { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+  .pick-amount { font-variant-numeric: tabular-nums; }
+  .pick-amount.zero { color: #bbb; }
+  .pick-amount.no-pick { color: #ddd; font-style: italic; }
 
-        /* leader row */
-        .row-lead td { background: #fffde7 !important; }
+  /* ── Upcoming badge ── */
+  .upcoming { color: #aaa; font-style: italic; }
 
-        /* money colours */
-        .pos  { color: #2e7d32; }
-        .zero { color: #bdbdbd; }
+  /* ── Totals row ── */
+  tr.totals-row td { font-weight: 700; background: #e8f5e9; border-top: 2px solid var(--green); }
 
-        /* rank medals */
-        .r1 { color: #c77700; }
-        .r2 { color: #757575; }
-        .r3 { color: #795548; }
-
-        /* ─── BADGES ─── */
-        .badge {
-            display: inline-block;
-            padding: 2px 9px;
-            border-radius: 20px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-        .badge-win   { background: #e8f5e9; color: #1b5e20; }
-        .badge-paid  { background: #e3f2fd; color: #0d47a1; }
-        .badge-unpaid{ background: #fbe9e7; color: #bf360c; }
-        .badge-used  { background: #fafafa; color: #9e9e9e; border: 1px solid #e0e0e0; }
-
-        /* ─── WEEK SELECTOR ─── */
-        .sel-row {
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border);
-            background: #fafff8;
-            flex-wrap: wrap;
-        }
-        .sel-row label { font-size: 0.82rem; font-weight: 600; color: var(--muted); }
-        select {
-            padding: 0.35rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            font-size: 0.84rem;
-            color: var(--text);
-            background: #fff;
-        }
-
-        /* ─── RESULT WINNER BANNER ─── */
-        .winner-banner {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            background: linear-gradient(90deg, #e8f5e9, #f9fbe7);
-            border-left: 4px solid var(--accent);
-            padding: 0.6rem 1rem;
-            font-size: 0.88rem;
-            margin: 0;
-        }
-        .winner-banner strong { color: var(--green-dark); }
-
-        /* ─── POOL INFO ─── */
-        .info-kv td:first-child { font-weight: 600; color: var(--green-dark); width: 45%; padding-right: 1rem; }
-        .payout-row { background: #f9fbe7; }
-        .payout-row td:first-child { color: var(--accent); }
-
-        /* ─── LOADING / ERROR ─── */
-        .msg { padding: 2.5rem 1rem; text-align: center; color: var(--muted); font-size: 0.88rem; }
-        .msg.err { color: #c62828; }
-        .msg.err small { display: block; margin-top: 6px; font-size: 0.76rem; color: #e57373; }
-
-        .spinner {
-            display: inline-block; width: 17px; height: 17px;
-            border: 3px solid var(--border); border-top-color: var(--green);
-            border-radius: 50%; animation: spin 0.7s linear infinite;
-            margin-right: 7px; vertical-align: middle;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ─── HOW IT WORKS (Pool Info) ─── */
-        .how-list { list-style: none; counter-reset: step; }
-        .how-list li {
-            counter-increment: step;
-            padding: 0.6rem 1rem 0.6rem 3rem;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.87rem;
-            position: relative;
-        }
-        .how-list li:last-child { border-bottom: none; }
-        .how-list li::before {
-            content: counter(step);
-            position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%);
-            background: var(--green); color: #fff;
-            width: 20px; height: 20px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.72rem; font-weight: 700;
-        }
-
-        /* ─── RESPONSIVE ─── */
-        @media (max-width: 600px) {
-            .hdr-text h1 { font-size: 1.05rem; }
-            main { padding: 1rem 0.4rem; }
-            thead th, tbody td { padding: 0.42rem 0.55rem; font-size: 0.8rem; }
-        }
-    </style>
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.1rem; }
+    nav button { padding: 12px 10px; font-size: 0.82rem; }
+    .hide-mob { display: none; }
+  }
+</style>
 </head>
 <body>
 
-<!-- ════════════════════ HEADER ════════════════════ -->
 <header>
-    <span class="hdr-icon">⛳</span>
-    <div class="hdr-text">
-        <h1>OAD Golf Pool 2026</h1>
-        <p>One and Done — Weekly Picks Pool · $100 Buy-In</p>
-    </div>
-    <div class="hdr-right">
-        <span id="last-updated"></span>
-        <button class="btn-refresh" onclick="refreshAll()">↻ Refresh</button>
-    </div>
+  <div>
+    <h1>⛳ Halvy &amp; Franco's Golf Pool - 2026</h1>
+  </div>
+  <span id="last-updated"></span>
 </header>
 
-<!-- ════════════════════ TABS ════════════════════ -->
 <nav>
-    <button class="tab-btn active"  onclick="showTab('standings',this)">🏆 Standings</button>
-    <button class="tab-btn"         onclick="showTab('picks',this)">🎯 Picks</button>
-    <button class="tab-btn"         onclick="showTab('winners',this)">🏅 Weekly Winners</button>
-    <button class="tab-btn"         onclick="showTab('info',this)">ℹ️ Pool Info</button>
+  <button class="active" onclick="showTab('leaderboard', this)">🏆 Leaderboard</button>
+  <button onclick="showTab('payouts', this)">💰 Payouts by Week</button>
+  <button onclick="showTab('weekly-winners', this)">🎯 Weekly Winners</button>
 </nav>
 
-<!-- ════════════════════ MAIN ════════════════════ -->
-<main>
+<div id="leaderboard" class="panel active">
+  <div class="table-wrap" style="margin-top:8px">
+    <table id="lb-table"></table>
+  </div>
+</div>
 
-    <!-- STANDINGS -->
-    <div id="standings" class="tab-pane active">
-        <div id="standings-stats" class="stat-strip"></div>
-        <div class="card">
-            <div class="card-hdr">🏆 Season Standings</div>
-            <div class="card-body">
-                <div id="standings-body" class="tbl-wrap">
-                    <div class="msg"><span class="spinner"></span>Loading standings…</div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="payouts" class="panel">
+  <div class="toggle-bar">
+    <button class="active" id="btn-by-week" onclick="setPayoutView('week')">By Participant / Week</button>
+    <button id="btn-by-player" onclick="setPayoutView('player')">By PGA Player</button>
+  </div>
+  <div class="table-wrap">
+    <table id="payout-table"></table>
+  </div>
+</div>
 
-    <!-- PICKS -->
-    <div id="picks" class="tab-pane">
-        <div class="card">
-            <div class="card-hdr">🎯 Weekly Picks</div>
-            <div class="card-body">
-                <div class="sel-row">
-                    <label>Tournament week:</label>
-                    <select id="week-select" onchange="renderPicksForWeek()"></select>
-                </div>
-                <div id="winner-banner"></div>
-                <div id="picks-body" class="tbl-wrap">
-                    <div class="msg"><span class="spinner"></span>Loading picks…</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- WEEKLY WINNERS -->
-    <div id="winners" class="tab-pane">
-        <div id="winners-stats" class="stat-strip"></div>
-        <div class="card">
-            <div class="card-hdr">🏅 Weekly Winners</div>
-            <div class="card-body">
-                <div id="winners-body" class="tbl-wrap">
-                    <div class="msg"><span class="spinner"></span>Loading weekly winners…</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- POOL INFO -->
-    <div id="info" class="tab-pane">
-        <div id="info-body">
-            <div class="msg"><span class="spinner"></span>Loading pool info…</div>
-        </div>
-    </div>
-
-</main>
+<div id="weekly-winners" class="panel">
+  <div class="ww-grid" id="ww-grid"></div>
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  CONFIG
-//
-//  PUBLISHED_ID  → the long key from your "Publish to web" URL
-//                  File → Share → Publish to web → copy the
-//                  portion after /spreadsheets/d/e/ and before /pub
-//
-//  TAB           → must match your sheet tab names exactly
-// ═══════════════════════════════════════════════════════════
-const PUBLISHED_ID = '2PACX-1vRXSNH78wfa-SFi_Jya-5reMFzbhG8dC6VvSi6OsFp8vnwNurLIsnNBgmB7ICsAtw2aMwQT7RyFCaqO';
+// ── Data ──────────────────────────────────────────────────────────────────────
+const standings    = [{"owner": "Christopher Foulds", "team": 14, "weekly": {"Masters": 630000, "RBC Heritage": 3600000, "Zurich Classic": 25555, "Cadillac": 3600000, "Truist": 605000, "PGA Championship": 364763, "Byron Nelson": 1122700, "Charles Schwab": 0, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 9948018}, {"owner": "Rod Langtry", "team": 15, "weekly": {"Masters": 101250, "RBC Heritage": 3600000, "Zurich Classic": 0, "Cadillac": 2180000, "Truist": 1780000, "PGA Championship": 496708, "Byron Nelson": 1122700, "Charles Schwab": 0, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 9280658}, {"owner": "Thomas Rippon", "team": 6, "weekly": {"Masters": 4500000, "RBC Heritage": 147250, "Zurich Classic": 112496, "Cadillac": 2180000, "Truist": 46950, "PGA Championship": 843867, "Byron Nelson": 100597, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 8125035}, {"owner": "Alpha 1", "team": 21, "weekly": {"Masters": 315000, "RBC Heritage": 2180000, "Zurich Classic": 1372750, "Cadillac": 3600000, "Truist": 245800, "PGA Championship": 0, "Byron Nelson": 100597, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 8008022}, {"owner": "Shane Foulds", "team": 27, "weekly": {"Masters": 121500, "RBC Heritage": 2180000, "Zurich Classic": 0, "Cadillac": 3600000, "Truist": 44600, "PGA Championship": 637050, "Byron Nelson": 1122700, "Charles Schwab": 141075, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 7846925}, {"owner": "Brad Currie", "team": 25, "weekly": {"Masters": 252000, "RBC Heritage": 266333, "Zurich Classic": 0, "Cadillac": 3600000, "Truist": 63000, "PGA Championship": 364763, "Byron Nelson": 1122700, "Charles Schwab": 1782000, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 7450796}, {"owner": "Surfer Dude", "team": 28, "weekly": {"Masters": 0, "RBC Heritage": 48200, "Zurich Classic": 1372750, "Cadillac": 3600000, "Truist": 245800, "PGA Championship": 1804000, "Byron Nelson": 100597, "Charles Schwab": 141075, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 7312422}, {"owner": "Lanny Gregory", "team": 18, "weekly": {"Masters": 252000, "RBC Heritage": 3600000, "Zurich Classic": 1372750, "Cadillac": 43800, "Truist": 44600, "PGA Championship": 637050, "Byron Nelson": 1122700, "Charles Schwab": 69300, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 7142200}, {"owner": "Ron Ilmer", "team": 22, "weekly": {"Masters": 630000, "RBC Heritage": 841667, "Zurich Classic": 0, "Cadillac": 3600000, "Truist": 245800, "PGA Championship": 0, "Byron Nelson": 1122700, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 6634042}, {"owner": "Deb H", "team": 11, "weekly": {"Masters": 101250, "RBC Heritage": 2180000, "Zurich Classic": 1372750, "Cadillac": 47800, "Truist": 365000, "PGA Championship": 125523, "Byron Nelson": 1122700, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 5508898}, {"owner": "Wes Wong", "team": 10, "weekly": {"Masters": 0, "RBC Heritage": 3600000, "Zurich Classic": 69493, "Cadillac": 43800, "Truist": 605000, "PGA Championship": 364763, "Byron Nelson": 0, "Charles Schwab": 524700, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 5207756}, {"owner": "George Kozlovic", "team": 12, "weekly": {"Masters": 101250, "RBC Heritage": 2180000, "Zurich Classic": 69493, "Cadillac": 841666, "Truist": 605000, "PGA Championship": 125523, "Byron Nelson": 58930, "Charles Schwab": 524700, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 4506562}, {"owner": "Darryl Hawkes", "team": 24, "weekly": {"Masters": 252000, "RBC Heritage": 48200, "Zurich Classic": 0, "Cadillac": 3600000, "Truist": 46950, "PGA Championship": 364763, "Byron Nelson": 100597, "Charles Schwab": 0, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 4412510}, {"owner": "Vikas 2", "team": 9, "weekly": {"Masters": 252000, "RBC Heritage": 2180000, "Zurich Classic": 0, "Cadillac": 75000, "Truist": 44600, "PGA Championship": 637050, "Byron Nelson": 1122700, "Charles Schwab": 0, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 4311350}, {"owner": "Wonger/Langer 1", "team": 17, "weekly": {"Masters": 2430000, "RBC Heritage": 147250, "Zurich Classic": 19475, "Cadillac": 841666, "Truist": 245800, "PGA Championship": 364763, "Byron Nelson": 100597, "Charles Schwab": 0, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 4149551}, {"owner": "Vikas 1", "team": 8, "weekly": {"Masters": 2430000, "RBC Heritage": 841667, "Zurich Classic": 0, "Cadillac": 43800, "Truist": 42800, "PGA Championship": 125523, "Byron Nelson": 100597, "Charles Schwab": 322988, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 3907375}, {"owner": "Derek B", "team": 7, "weekly": {"Masters": 0, "RBC Heritage": 48200, "Zurich Classic": 185250, "Cadillac": 75000, "Truist": 605000, "PGA Championship": 637050, "Byron Nelson": 1122700, "Charles Schwab": 524700, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 3197900}, {"owner": "Assman", "team": 29, "weekly": {"Masters": 0, "RBC Heritage": 48200, "Zurich Classic": 36100, "Cadillac": 2180000, "Truist": 245800, "PGA Championship": 0, "Byron Nelson": 187975, "Charles Schwab": 92400, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2790475}, {"owner": "Halvy", "team": 1, "weekly": {"Masters": 1080000, "RBC Heritage": 410000, "Zurich Classic": 112496, "Cadillac": 46200, "Truist": 740000, "PGA Championship": 50348, "Byron Nelson": 187975, "Charles Schwab": 29766, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2656785}, {"owner": "David Rockliff", "team": 20, "weekly": {"Masters": 0, "RBC Heritage": 565000, "Zurich Classic": 112496, "Cadillac": 841666, "Truist": 44600, "PGA Championship": 364763, "Byron Nelson": 100597, "Charles Schwab": 524700, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2553822}, {"owner": "Geoff Wishlaw", "team": 16, "weekly": {"Masters": 101250, "RBC Heritage": 62440, "Zurich Classic": 25555, "Cadillac": 841666, "Truist": 245800, "PGA Championship": 843867, "Byron Nelson": 187975, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2502428}, {"owner": "The Randy Smith", "team": 23, "weekly": {"Masters": 121500, "RBC Heritage": 147250, "Zurich Classic": 0, "Cadillac": 169571, "Truist": 365000, "PGA Championship": 364763, "Byron Nelson": 1122700, "Charles Schwab": 0, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2290784}, {"owner": "Russ Davidson", "team": 19, "weekly": {"Masters": 0, "RBC Heritage": 147250, "Zurich Classic": 19475, "Cadillac": 265000, "Truist": 44600, "PGA Championship": 78806, "Byron Nelson": 1122700, "Charles Schwab": 524700, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2202531}, {"owner": "Paul Anaka", "team": 5, "weekly": {"Masters": 0, "RBC Heritage": 147250, "Zurich Classic": 0, "Cadillac": 43800, "Truist": 505000, "PGA Championship": 125523, "Byron Nelson": 1122700, "Charles Schwab": 141075, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 2085348}, {"owner": "Mark Lee", "team": 3, "weekly": {"Masters": 630000, "RBC Heritage": 0, "Zurich Classic": 112496, "Cadillac": 40200, "Truist": 63000, "PGA Championship": 637050, "Byron Nelson": 0, "Charles Schwab": 322988, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 1805734}, {"owner": "Franco", "team": 2, "weekly": {"Masters": 630000, "RBC Heritage": 266333, "Zurich Classic": 0, "Cadillac": 50900, "Truist": 605000, "PGA Championship": 0, "Byron Nelson": 0, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 1746108}, {"owner": "Karn Dhillon", "team": 26, "weekly": {"Masters": 630000, "RBC Heritage": 147250, "Zurich Classic": 25555, "Cadillac": 43800, "Truist": 85000, "PGA Championship": 364763, "Byron Nelson": 100597, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 1590840}, {"owner": "Trevor W", "team": 4, "weekly": {"Masters": 252000, "RBC Heritage": 147250, "Zurich Classic": 112496, "Cadillac": 75000, "Truist": 42800, "PGA Championship": 637050, "Byron Nelson": 100597, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 1561068}, {"owner": "Jason Gigliotti", "team": 13, "weekly": {"Masters": 0, "RBC Heritage": 841667, "Zurich Classic": 0, "Cadillac": 75000, "Truist": 43600, "PGA Championship": 78806, "Byron Nelson": 100597, "Charles Schwab": 193875, "Memorial": 0, "Canadian Open": 0, "US Open": 0, "Travellers": 0, "John Deere": 0, "Scottish Open": 0, "The Open": 0, "3M Open": 0, "Rocket Mortgage": 0, "Wyndham": 0, "FedEx St Jude": 0, "BMW Championship": 0, "Tour Championship": 0}, "total": 1333545}];
+const picks        = {"Halvy": {"Masters": "Cameron Young", "RBC Heritage": "Xander Schauffele", "Zurich Classic": "Andrew Novak", "Cadillac": "Harris English", "Truist": "Tommy Fleetwood", "PGA Championship": "K Reitan", "Byron Nelson": "Brooks Koepka", "Charles Schwab": "Robert MacIntyre", "Memorial": "Chris Gotterup"}, "Franco": {"Masters": "Xander Schauffele", "RBC Heritage": "Wyndham Clark", "Zurich Classic": "Shane Lowry", "Cadillac": "Russell Henley", "Truist": "Ludvig Aberg", "PGA Championship": "Tommy Fleetwood", "Byron Nelson": "Chris Gotterup", "Charles Schwab": "Justin Thomas", "Memorial": "Jordan Spieth"}, "Mark Lee": {"Masters": "Xander Schauffele", "RBC Heritage": "X", "Zurich Classic": "Seamus Power", "Cadillac": "Chandler Blanchet", "Truist": "Berger", "PGA Championship": "Rory McIlroy", "Byron Nelson": "Billy Horschel", "Charles Schwab": "JJ Spaun", "Memorial": "Adam Scott"}, "Trevor W": {"Masters": "Ludvig Aberg", "RBC Heritage": "Russell Henley", "Zurich Classic": "Andrew Novak", "Cadillac": "Sam Burns", "Truist": "Si Woo Kim", "PGA Championship": "Xander Schauffele", "Byron Nelson": "Ryo Hisatsone", "Charles Schwab": "Justin Thomas", "Memorial": "Jordan Spieth"}, "Paul Anaka": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Brian Harman", "Zurich Classic": "Tony Finau", "Cadillac": "Collin Morikawa", "Truist": "Patrick Cantlay", "PGA Championship": "Cameron Young", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Ludvig Aberg", "Memorial": "Scottie Scheffler"}, "Thomas Rippon": {"Masters": "Rory McIlroy", "RBC Heritage": "Cameron Young", "Zurich Classic": "Ben Griffin", "Cadillac": "Scottie Scheffler", "Truist": "Matt Fitzpatrick", "PGA Championship": "Ludvig Aberg", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Justin Thomas", "Memorial": "Russell Henley"}, "Derek B": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Tommy Fleetwood", "Zurich Classic": "Billy Horschel", "Cadillac": "Chris Gotterup", "Truist": "Ludvig Aberg", "PGA Championship": "Xander Schauffele", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Ben Griffin", "Memorial": "Matt Fitzpatrick"}, "Vikas 1": {"Masters": "Scottie Scheffler", "RBC Heritage": "Ludvig Aberg", "Zurich Classic": "Brooks Koepka", "Cadillac": "Collin Morikawa", "Truist": "Si Woo Kim", "PGA Championship": "Cameron Young", "Byron Nelson": "A J EWART", "Charles Schwab": "JJ Spaun", "Memorial": "Matt Fitzpatrick"}, "Vikas 2": {"Masters": "Ludvig Aberg", "RBC Heritage": "Scottie Scheffler", "Zurich Classic": "Brooks Koepka", "Cadillac": "Chris Gotterup", "Truist": "Robert MacIntyre", "PGA Championship": "Xander Schauffele", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "R Hojgaard", "Memorial": "Justin Rose"}, "Wes Wong": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Matt Fitzpatrick", "Zurich Classic": "Karl Vilips", "Cadillac": "Collin Morikawa", "Truist": "Ludvig Aberg", "PGA Championship": "Scottie Scheffler", "Byron Nelson": "M Schmid", "Charles Schwab": "Alex Smalley", "Memorial": "Patrick Cantlay"}, "Deb H": {"Masters": "Jon Rahm", "RBC Heritage": "Scottie Scheffler", "Zurich Classic": "Alex Fitzpatrick", "Cadillac": "Hideki Matsuyama", "Truist": "Nick Taylor", "PGA Championship": "Cameron Young", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Justin Thomas", "Memorial": "Ludvig Aberg"}, "George Kozlovic": {"Masters": "Jon Rahm", "RBC Heritage": "Scottie Scheffler", "Zurich Classic": "Karl Vilips", "Cadillac": "Adam Scott", "Truist": "Ludvig Aberg", "PGA Championship": "Cameron Young", "Byron Nelson": "Eric Cole", "Charles Schwab": "Alex Smalley", "Memorial": "Matt Fitzpatrick"}, "Jason Gigliotti": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Ludvig Aberg", "Zurich Classic": "Shane Lowry", "Cadillac": "Chris Gotterup", "Truist": "Ben Griffin", "PGA Championship": "Si Woo Kim", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Justin Thomas", "Memorial": "X"}, "Christopher Foulds": {"Masters": "Xander Schauffele", "RBC Heritage": "Matt Fitzpatrick", "Zurich Classic": "Aaron Rai", "Cadillac": "Cameron Young", "Truist": "Ludvig Aberg", "PGA Championship": "Scottie Scheffler", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Rickie Fowler", "Memorial": "Patrick Cantlay"}, "Rod Langtry": {"Masters": "Jon Rahm", "RBC Heritage": "Matt Fitzpatrick", "Zurich Classic": "Brooks Koepka", "Cadillac": "Scottie Scheffler", "Truist": "Rickie Fowler", "PGA Championship": "Patrick Reed", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "S Im", "Memorial": "Justin Thomas"}, "Geoff Wishlaw": {"Masters": "Jon Rahm", "RBC Heritage": "Viktor Hovland", "Zurich Classic": "Aaron Rai", "Cadillac": "Adam Scott", "Truist": "Rory McIlroy", "PGA Championship": "Ludvig Aberg", "Byron Nelson": "Brooks Koepka", "Charles Schwab": "Justin Thomas", "Memorial": "Nick Taylor"}, "Wonger/Langer 1": {"Masters": "Scottie Scheffler", "RBC Heritage": "Russell Henley", "Zurich Classic": "S Yellamaraju", "Cadillac": "Si Woo Kim", "Truist": "Rory McIlroy", "PGA Championship": "Matt Fitzpatrick", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Rickie Fowler", "Memorial": "Ben Griffin"}, "Lanny Gregory": {"Masters": "Ludvig Aberg", "RBC Heritage": "Matt Fitzpatrick", "Zurich Classic": "Alex Fitzpatrick", "Cadillac": "Collin Morikawa", "Truist": "Xander Schauffele", "PGA Championship": "Rory McIlroy", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "A Bhatia", "Memorial": "Cameron Young"}, "Russ Davidson": {"Masters": "Robert MacIntyre", "RBC Heritage": "Russell Henley", "Zurich Classic": "Ryan Gerard", "Cadillac": "Min Woo Lee", "Truist": "Xander Schauffele", "PGA Championship": "Patrick Cantlay", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Alex Smalley", "Memorial": "JJ Spaun"}, "David Rockliff": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Patrick Cantlay", "Zurich Classic": "Andrew Novak", "Cadillac": "Adam Scott", "Truist": "Xander Schauffele", "PGA Championship": "Scottie Scheffler", "Byron Nelson": "Ryo Hisatsone", "Charles Schwab": "Alex Smalley", "Memorial": "Hideki Matsuyama"}, "Alpha 1": {"Masters": "Matt Fitzpatrick", "RBC Heritage": "Scottie Scheffler", "Zurich Classic": "Alex Fitzpatrick", "Cadillac": "Cameron Young", "Truist": "Rory McIlroy", "PGA Championship": "Tommy Fleetwood", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Justin Thomas", "Memorial": "Si Woo Kim"}, "Ron Ilmer": {"Masters": "Xander Schauffele", "RBC Heritage": "Collin Morikawa", "Zurich Classic": "Brooks Koepka", "Cadillac": "Cameron Young", "Truist": "Rory McIlroy", "PGA Championship": "Bryson DeChambeau", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Justin Thomas", "Memorial": "Ludvig Aberg"}, "The Randy Smith": {"Masters": "Tommy Fleetwood", "RBC Heritage": "Cameron Young", "Zurich Classic": "Shane Lowry", "Cadillac": "A Bhatia", "Truist": "Nick Taylor", "PGA Championship": "Matt Fitzpatrick", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Rickie Fowler", "Memorial": "Corey Conners"}, "Darryl Hawkes": {"Masters": "Ludvig Aberg", "RBC Heritage": "Tommy Fleetwood", "Zurich Classic": "Brooks Koepka", "Cadillac": "Cameron Young", "Truist": "Matt Fitzpatrick", "PGA Championship": "Scottie Scheffler", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Rickie Fowler", "Memorial": "Justin Thomas"}, "Brad Currie": {"Masters": "Ludvig Aberg", "RBC Heritage": "Sam Burns", "Zurich Classic": "Shane Lowry", "Cadillac": "Cameron Young", "Truist": "Justin Rose", "PGA Championship": "Scottie Scheffler", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Russell Henley", "Memorial": "Ben Griffin"}, "Karn Dhillon": {"Masters": "Xander Schauffele", "RBC Heritage": "Russell Henley", "Zurich Classic": "Sahith Theegala", "Cadillac": "Collin Morikawa", "Truist": "Sam Burns", "PGA Championship": "Scottie Scheffler", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Hideki Matsuyama", "Memorial": "Nick Taylor"}, "Shane Foulds": {"Masters": "Tommy Fleetwood", "RBC Heritage": "Scottie Scheffler", "Zurich Classic": "Shane Lowry", "Cadillac": "Cameron Young", "Truist": "Xander Schauffele", "PGA Championship": "Rory McIlroy", "Byron Nelson": "Si Woo Kim", "Charles Schwab": "Ludvig Aberg", "Memorial": "Russell Henley"}, "Surfer Dude": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Tommy Fleetwood", "Zurich Classic": "Alex Fitzpatrick", "Cadillac": "Cameron Young", "Truist": "Rory McIlroy", "PGA Championship": "Jon Rahm", "Byron Nelson": "Jordan Spieth", "Charles Schwab": "Ludvig Aberg", "Memorial": "Xander Schauffele"}, "Assman": {"Masters": "Bryson DeChambeau", "RBC Heritage": "Tommy Fleetwood", "Zurich Classic": "Taylor Moore", "Cadillac": "Scottie Scheffler", "Truist": "Rory McIlroy", "PGA Championship": "Russell Henley", "Byron Nelson": "Brooks Koepka", "Charles Schwab": "Brian Harman", "Memorial": "Xander Schauffele"}};
+const results      = {"Masters": {"Rory McIlroy": 4500000, "_winner": "Rory McIlroy", "Scottie Scheffler": 2430000, "Cameron Young": 1080000, "Xander Schauffele": 630000, "Matt Fitzpatrick": 315000, "Ludvig Aberg": 252000, "Tommy Fleetwood": 121500, "Jon Rahm": 101250, "Bryson DeChambeau": 0, "Robert MacIntyre": 0}, "RBC Heritage": {"Matt Fitzpatrick": 3600000, "_winner": "Matt Fitzpatrick", "Scottie Scheffler": 2180000, "Collin Morikawa": 841667, "Ludvig Aberg": 841667, "Patrick Cantlay": 565000, "Xander Schauffele": 410000, "Sam Burns": 266333, "Wyndham Clark": 266333, "Brian Harman": 147250, "Cameron Young": 147250, "JJ Spaun": 147250, "Russell Henley": 147250, "Robert MacIntyre": 62440, "Viktor Hovland": 62440, "Tommy Fleetwood": 48200, "X": 0}, "Zurich Classic": {"Alex Fitzpatrick": 1372750, "_winner": "Alex Fitzpatrick", "Billy Horschel": 185250, "Ben Griffin": 112496, "Andrew Novak": 112496, "Seamus Power": 112496, "Karl Vilips": 69493, "Taylor Moore": 36100, "Aaron Rai": 25555, "Sahith Theegala": 25555, "S Yellamaraju": 19475, "Ryan Gerard": 19475, "Shane Lowry": 0, "Brooks Koepka": 0, "Tony Finau": 0}, "Cadillac": {"Cameron Young": 3600000, "_winner": "Cameron Young", "Scottie Scheffler": 2180000, "Adam Scott": 841666, "Si Woo Kim": 841666, "Min Woo Lee": 265000, "A Bhatia": 169571, "Chris Gotterup": 75000, "Sam Burns": 75000, "Russell Henley": 50900, "Hideki Matsuyama": 47800, "Harris English": 46200, "Collin Morikawa": 43800, "Chandler Blanchet": 40200}, "Truist": {"K Reitan": 3600000, "_winner": "K Reitan", "Rickie Fowler": 1780000, "Tommy Fleetwood": 740000, "Ludvig Aberg": 605000, "Cameron Young": 505000, "Nick Taylor": 365000, "Rory McIlroy": 245800, "Sam Burns": 85000, "Justin Rose": 63000, "Berger": 63000, "Matt Fitzpatrick": 46950, "Xander Schauffele": 44600, "Robert MacIntyre": 44600, "Ben Griffin": 43600, "Si Woo Kim": 42800, "Patrick Cantlay": 505000}, "PGA Championship": {"Aaron Rai": 3690000, "_winner": "Aaron Rai", "Jon Rahm": 1804000, "Ludvig Aberg": 843867, "Rory McIlroy": 637050, "Xander Schauffele": 637050, "Patrick Reed": 496708, "Cameron Young": 125523, "Sam Burns": 125523, "Tommy Fleetwood": 0, "Russell Henley": 0, "Bryson DeChambeau": 0, "Patrick Cantlay": 78806, "Daniel Berger": 78806, "Si Woo Kim": 78806, "K Reitan": 50348, "Collin Morikawa": 34186, "Rickie Fowler": 29218, "Scottie Scheffler": 364763, "Matt Fitzpatrick": 364763}, "Byron Nelson": {"Wyndham Clark": 1854000, "_winner": "Wyndham Clark", "Brooks Koepka": 187975, "Ryo Hisatsone": 100597, "Si Woo Kim": 1122700, "Jordan Spieth": 100597, "A J EWART": 100597, "Billy Horschel": 0, "M Schmid": 0, "Chris Gotterup": 0, "Eric Cole": 58930}, "Charles Schwab": {"Russell Henley": 1782000, "_winner": "Russell Henley", "Ben Griffin": 524700, "Alex Smalley": 524700, "JJ Spaun": 322988, "Justin Thomas": 193875, "Rickie Fowler": 0, "R Hojgaard": 0, "S Im": 0, "A Bhatia": 69300, "Hideki Matsuyama": 193875, "Ludvig Aberg": 141075, "Brian Harman": 92400, "Robert MacIntyre": 29766}, "Memorial": {}, "Canadian Open": {}, "US Open": {}, "Travellers": {}, "John Deere": {}, "Scottish Open": {}, "The Open": {}, "3M Open": {}, "Rocket Mortgage": {}, "Wyndham": {}, "FedEx St Jude": {}, "BMW Championship": {}, "Tour Championship": {}};
+const tournaments  = [{"name": "Masters", "dates": "Apr 9-12"}, {"name": "RBC Heritage", "dates": "Apr 16-19"}, {"name": "Zurich Classic", "dates": "Apr 23-26"}, {"name": "Cadillac", "dates": "Apr 30-May 3"}, {"name": "Truist", "dates": "May 7-10"}, {"name": "PGA Championship", "dates": "May 14-17"}, {"name": "Byron Nelson", "dates": "May 21-24"}, {"name": "Charles Schwab", "dates": "May 28-31"}, {"name": "Memorial", "dates": "Jun 4-7"}, {"name": "Canadian Open", "dates": "Jun 11-14"}, {"name": "US Open", "dates": "Jun 18-21"}, {"name": "Travellers", "dates": "Jun 25-28"}, {"name": "John Deere", "dates": "Jul 2-5"}, {"name": "Scottish Open", "dates": "Jul 9-12"}, {"name": "The Open", "dates": "Jul 16-19"}, {"name": "3M Open", "dates": "Jul 23-26"}, {"name": "Rocket Mortgage", "dates": "Jul 30-Aug 2"}, {"name": "Wyndham", "dates": "Aug 6-9"}, {"name": "FedEx St Jude", "dates": "Aug 13-17"}, {"name": "BMW Championship", "dates": "Aug 20-23"}, {"name": "Tour Championship", "dates": "Aug 27-30"}];
+const weeklyWinners= [{"week": 1, "tournament": "Masters", "dates": "Apr 9-12", "winner": "Rory McIlroy", "num_winners": 1, "bonus": 58, "pickers": ["Thomas Rippon"]}, {"week": 2, "tournament": "RBC Heritage", "dates": "Apr 16-19", "winner": "Matt Fitzpatrick", "num_winners": 4, "bonus": 14.5, "pickers": ["Wes Wong", "Christopher Foulds", "Rod Langtry", "Lanny Gregory"]}, {"week": 3, "tournament": "Zurich Classic", "dates": "Apr 23-26", "winner": "Alex Fitzpatrick", "num_winners": 4, "bonus": 14.5, "pickers": ["Deb H", "Lanny Gregory", "Alpha 1", "Surfer Dude"]}, {"week": 4, "tournament": "Cadillac", "dates": "Apr 30-May 3", "winner": "Cameron Young", "num_winners": 7, "bonus": 8.285714285714286, "pickers": ["Christopher Foulds", "Alpha 1", "Ron Ilmer", "Darryl Hawkes", "Brad Currie", "Shane Foulds", "Surfer Dude"]}, {"week": 5, "tournament": "Truist", "dates": "May 7-10", "winner": "K Reitan", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 6, "tournament": "PGA Championship", "dates": "May 14-17", "winner": "Aaron Rai ", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 7, "tournament": "Byron Nelson", "dates": "May 21-24", "winner": "Wyndham Clark", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 8, "tournament": "Charles Schwab", "dates": "May 28-31", "winner": "Russell Henley", "num_winners": 1, "bonus": 58, "pickers": ["Brad Currie"]}, {"week": 9, "tournament": "Memorial", "dates": "Jun 4-7", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 10, "tournament": "Canadian Open", "dates": "Jun 11-14", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 11, "tournament": "US Open", "dates": "Jun 18-21", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 12, "tournament": "Travellers", "dates": "Jun 25-28", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 13, "tournament": "John Deere", "dates": "Jul 2-5", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 14, "tournament": "Scottish Open", "dates": "Jul 9-12", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 15, "tournament": "The Open", "dates": "Jul 16-19", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 16, "tournament": "3M Open", "dates": "Jul 23-26", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 17, "tournament": "Rocket Mortgage", "dates": "Jul 30-Aug 2", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 18, "tournament": "Wyndham", "dates": "Aug 6-9", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 19, "tournament": "FedEx St Jude", "dates": "Aug 13-17", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 20, "tournament": "BMW Championship", "dates": "Aug 20-23", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 21, "tournament": "Tour Championship", "dates": "Aug 27-30", "winner": "", "num_winners": 0, "bonus": "N/A \u2014 No Weekly Payout", "pickers": []}];
+const completed    = ["Masters", "RBC Heritage", "Zurich Classic", "Cadillac", "Truist", "PGA Championship", "Byron Nelson", "Charles Schwab"];
 
-const TAB = {
-    standings    : 'Standings',
-    picks        : 'Picks',
-    weeklyWinners: 'Weekly Winners',
-    setup        : 'Pool Setup',
-};
-
-// ═══════════════════════════════════════════════════════════
-//  STATE
-// ═══════════════════════════════════════════════════════════
-const cache = {};          // raw parsed CSV data per tab key
-const loaded = {};         // which tab-panes have been rendered
-let   picksRows = null;    // kept for the week selector
-
-// ═══════════════════════════════════════════════════════════
-//  FETCH / PARSE
-// ═══════════════════════════════════════════════════════════
-function csvUrl(tabName) {
-    // Uses the "Publish to web" URL — works without any API key
-    return `https://docs.google.com/spreadsheets/d/e/${PUBLISHED_ID}/pub?output=csv&sheet=${encodeURIComponent(tabName)}`;
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function fmt(n) {
+  if (!n) return '$0';
+  return '$' + n.toLocaleString('en-CA');
 }
 
-function parseCSV(text) {
-    const rows = [];
-    let row = [], field = '', inQ = false;
-    for (let i = 0; i < text.length; i++) {
-        const c = text[i], n = text[i + 1];
-        if (inQ) {
-            if (c === '"' && n === '"') { field += '"'; i++; }
-            else if (c === '"')          { inQ = false; }
-            else                         { field += c; }
-        } else {
-            if      (c === '"')  { inQ = true; }
-            else if (c === ',')  { row.push(field.trim()); field = ''; }
-            else if (c === '\n') { row.push(field.trim()); if (row.some(Boolean)) rows.push(row); row = []; field = ''; }
-            else if (c !== '\r') { field += c; }
-        }
-    }
-    if (field || row.length) { row.push(field.trim()); if (row.some(Boolean)) rows.push(row); }
-    return rows;
+function rankClass(i) {
+  if (i === 0) return 'rank-1';
+  if (i === 1) return 'rank-2';
+  if (i === 2) return 'rank-3';
+  return '';
 }
 
-async function fetchTab(key) {
-    if (cache[key]) return cache[key];
-    const r = await fetch(csvUrl(TAB[key]));
-    if (!r.ok) throw new Error(`HTTP ${r.status} loading "${TAB[key]}"`);
-    cache[key] = parseCSV(await r.text());
-    return cache[key];
+// ── Tab switching ─────────────────────────────────────────────────────────────
+function showTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════════════
-//  TABS
-// ═══════════════════════════════════════════════════════════
-function showTab(name, btn) {
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(name).classList.add('active');
-    btn.classList.add('active');
-    if (!loaded[name]) loadAndRender(name);
+// ── Leaderboard sort state ────────────────────────────────────────────────────
+let lbSortCol = '__total__';
+let lbSortDir = -1; // -1 = desc, 1 = asc
+
+function sortLeaderboard(col) {
+  if (lbSortCol === col) {
+    lbSortDir *= -1;
+  } else {
+    lbSortCol = col;
+    lbSortDir = (col === 'owner') ? 1 : -1;
+  }
+  buildLeaderboard();
 }
 
-async function loadAndRender(name) {
-    try {
-        if (name === 'standings') {
-            await Promise.all([fetchTab('standings'), fetchTab('weeklyWinners')]);
-            renderStandings();
-        }
-        if (name === 'picks') {
-            await Promise.all([fetchTab('picks'), fetchTab('weeklyWinners')]);
-            renderPicks();
-        }
-        if (name === 'winners') {
-            await fetchTab('weeklyWinners');
-            renderWeeklyWinners();
-        }
-        if (name === 'info') {
-            await fetchTab('setup');
-            renderInfo();
-        }
-        loaded[name] = true;
-    } catch (e) {
-        setErr(name, e.message);
-    }
-}
+// ── Leaderboard ───────────────────────────────────────────────────────────────
+function buildLeaderboard() {
+  const tbl = document.getElementById('lb-table');
+  const tNames = tournaments.map(t => t.name);
+  const compSet = new Set(completed);
 
-function setErr(pane, msg) {
-    const targets = {
-        standings: 'standings-body',
-        picks    : 'picks-body',
-        winners  : 'winners-body',
-        info     : 'info-body',
-    };
-    const el = document.getElementById(targets[pane]);
-    const testUrl = csvUrl(TAB[pane] || 'Standings');
-
-    // Detect file:// protocol — most common cause of failure
-    const isLocal = location.protocol === 'file:';
-
-    if (el) el.innerHTML = `<div class="msg err">
-        ⚠️ <strong>Could not load data.</strong><br>
-        <small style="display:block;margin-top:6px;line-height:1.7">
-          Error: <code>${msg}</code>
-        </small>
-        ${isLocal ? `<div style="margin-top:10px;padding:8px 10px;background:#fff3e0;border-radius:5px;color:#e65100;font-size:0.8rem">
-          <strong>⚠️ You are viewing this file locally (file://).</strong><br>
-          Browsers block all data fetching from local files.<br>
-          You must host this on GitHub Pages (https://) for it to work.
-        </div>` : ''}
-        <div style="margin-top:10px;font-size:0.78rem;color:#777">
-          Test the data URL directly in a new tab:<br>
-          <a href="${testUrl}" target="_blank" style="color:#1565c0;word-break:break-all">${testUrl}</a>
-        </div>
-    </div>`;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  FORMAT HELPERS
-// ═══════════════════════════════════════════════════════════
-function toNum(v) {
-    return parseFloat(String(v || '0').replace(/[$,]/g, '')) || 0;
-}
-function fmtMoney(v) {
-    const n = toNum(v);
-    if (n === 0) return '<span class="zero">—</span>';
-    return `<span class="pos">$${n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>`;
-}
-function fmtTotal(v) {
-    const n = toNum(v);
-    return `$${n.toLocaleString('en-CA', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  STANDINGS
-//
-//  Expected layout (from your sheet):
-//    Row 0  → headers: ["Team / Owner", "Week 1 - Tournament", ..., "Total"]
-//    Row 1+ → ["Name (Team N)", $earned, ..., $total]
-//
-//  The last non-empty header column is treated as "Total".
-//  All columns between index 1 and totalIdx are weekly earnings.
-// ═══════════════════════════════════════════════════════════
-function renderStandings() {
-    const rows = (cache.standings || []).filter(r => r[0]);
-    if (rows.length < 2) {
-        document.getElementById('standings-body').innerHTML = '<div class="msg">No standings data yet.</div>';
-        return;
-    }
-
-    const headers  = rows[0];
-    const body     = rows.slice(1);
-
-    // Find "Total" column — search from right for a cell containing "total"
-    let totalIdx = headers.length - 1;
-    for (let i = headers.length - 1; i >= 1; i--) {
-        if (headers[i] && /total/i.test(headers[i])) { totalIdx = i; break; }
-    }
-
-    const weekHeaders = headers.slice(1, totalIdx);
-
-    // Sort descending by total
-    body.sort((a, b) => toNum(b[totalIdx]) - toNum(a[totalIdx]));
-
-    // Leader name for stat box
-    const leader = body[0] ? body[0][0] : '—';
-    const totalPot = body.reduce((s, r) => s + toNum(r[totalIdx]), 0);
-    const weeksPlayed = weekHeaders.filter((_, i) => body.some(r => toNum(r[i + 1]) > 0)).length;
-
-    document.getElementById('standings-stats').innerHTML = `
-        <div class="stat-box"><div class="val">${body.length}</div><div class="lbl">Teams</div></div>
-        <div class="stat-box"><div class="val">${weeksPlayed}</div><div class="lbl">Weeks Played</div></div>
-        <div class="stat-box gold"><div class="val">${leader}</div><div class="lbl">Current Leader</div></div>
-        <div class="stat-box"><div class="val">$${Math.round(totalPot).toLocaleString()}</div><div class="lbl">Total Paid Out</div></div>
-    `;
-
-    let t = '<table><thead><tr>';
-    t += '<th class="c-rank">#</th>';
-    t += '<th>Team / Owner</th>';
-    weekHeaders.forEach(w => t += `<th class="c-right">${w || ''}</th>`);
-    t += '<th class="c-right" style="border-left:2px solid #c8e6c9">Total</th>';
-    t += '</tr></thead><tbody>';
-
-    body.forEach((row, i) => {
-        const rank  = i + 1;
-        const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : rank;
-        const rCls  = rank === 1 ? 'r1' : rank === 2 ? 'r2' : rank === 3 ? 'r3' : '';
-        t += `<tr${rank === 1 ? ' class="row-lead"' : ''}>`;
-        t += `<td class="c-rank ${rCls}">${medal}</td>`;
-        t += `<td class="c-name">${row[0]}</td>`;
-        for (let j = 1; j <= weekHeaders.length; j++) {
-            t += `<td class="c-right">${fmtMoney(row[j])}</td>`;
-        }
-        t += `<td class="c-total" style="border-left:2px solid #c8e6c9">${fmtTotal(row[totalIdx])}</td>`;
-        t += '</tr>';
-    });
-
-    t += '</tbody></table>';
-    document.getElementById('standings-body').innerHTML = t;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  PICKS
-//
-//  Expected layout:
-//    Row 0  → headers: ["Team / Owner", "Week 1 - Tournament", "Week 2 - ...", ...]
-//    Row 1+ → ["Team Name", "Golfer Pick", ...]
-//
-//  The "Weekly Winners" tab supplies the tournament winner for
-//  each week so we can show the ✓ Win badge.
-// ═══════════════════════════════════════════════════════════
-function renderPicks() {
-    const rows = (cache.picks || []).filter(r => r[0]);
-    if (rows.length < 2) {
-        document.getElementById('picks-body').innerHTML = '<div class="msg">No picks entered yet.</div>';
-        return;
-    }
-
-    picksRows = rows;
-    const headers     = rows[0];
-    const weekHeaders = headers.slice(1).filter(Boolean);
-
-    // Populate selector
-    const sel = document.getElementById('week-select');
-    sel.innerHTML = '';
-    weekHeaders.forEach((w, i) => {
-        const o = document.createElement('option');
-        o.value = i;
-        o.textContent = w;
-        sel.appendChild(o);
-    });
-
-    // Default to the latest week with at least one pick
-    const bodyRows = rows.slice(1);
-    let latestWeek = 0;
-    for (let w = 0; w < weekHeaders.length; w++) {
-        if (bodyRows.some(r => r[w + 1] && r[w + 1].trim())) latestWeek = w;
-    }
-    sel.value = latestWeek;
-
-    renderPicksForWeek();
-}
-
-function renderPicksForWeek() {
-    const sel    = document.getElementById('week-select');
-    const wIdx   = parseInt(sel.value);
-    const rows   = picksRows;
-    if (!rows) return;
-
-    const weekName   = rows[0][wIdx + 1] || `Week ${wIdx + 1}`;
-    const bodyRows   = rows.slice(1);
-
-    // ── Find tournament winner from Weekly Winners tab ──
-    // Expected Weekly Winners columns (adjust indices if your sheet differs):
-    //   Col 0: Week # or label
-    //   Col 1: Tournament name
-    //   Col 2: Golfer who won the tournament
-    //   Col 3: Team owner(s) that picked the winner
-    //   Col 4: Prize amount
-    let tournamentWinner = null;
-    let weeklyWinnerTeam = null;
-    if (cache.weeklyWinners) {
-        const ww = cache.weeklyWinners.slice(1); // skip header
-        ww.forEach(r => {
-            const wLabel = String(r[0] || '').trim();
-            const tName  = String(r[1] || '').trim();
-            // Match by week index+1 or by tournament name substring
-            if (wLabel === String(wIdx + 1) ||
-                wLabel.toLowerCase().includes(`week ${wIdx + 1}`) ||
-                weekName.toLowerCase().includes(tName.toLowerCase()) ||
-                tName.toLowerCase().includes(weekName.split('-').pop().trim().toLowerCase())) {
-                tournamentWinner = (r[2] || '').trim();
-                weeklyWinnerTeam = (r[3] || '').trim();
-            }
-        });
-    }
-
-    // ── Winner banner ──
-    const bannerEl = document.getElementById('winner-banner');
-    if (tournamentWinner) {
-        bannerEl.innerHTML = `<div class="winner-banner">
-            🏆 <strong>${tournamentWinner}</strong> won this tournament
-            ${weeklyWinnerTeam ? ` · <span class="badge badge-win">✓ ${weeklyWinnerTeam}</span> took the bonus` : '· No pool participant picked the winner'}
-        </div>`;
+  // Sort a copy of standings
+  const sorted = [...standings].filter(s => s.owner && s.owner !== '0');
+  sorted.sort((a, b) => {
+    let va, vb;
+    if (lbSortCol === '__total__') {
+      va = a.total; vb = b.total;
+    } else if (lbSortCol === 'owner') {
+      va = a.owner.toLowerCase(); vb = b.owner.toLowerCase();
+      return va < vb ? -lbSortDir : va > vb ? lbSortDir : 0;
     } else {
-        bannerEl.innerHTML = '<div class="winner-banner" style="color:var(--muted)">⏳ Tournament result not yet recorded</div>';
+      va = a.weekly[lbSortCol] || 0;
+      vb = b.weekly[lbSortCol] || 0;
     }
+    return (vb - va) * lbSortDir;
+  });
 
-    // ── Picks table ──
-    let t = '<table><thead><tr>';
-    t += '<th>Team / Owner</th><th>Golfer Pick</th><th></th>';
-    t += '</tr></thead><tbody>';
+  // Header
+  let html = '<thead><tr>';
+  html += '<th>Rank</th>';
+  html += `<th class="sortable${lbSortCol === 'owner' ? (lbSortDir === 1 ? ' sort-asc' : ' sort-desc') : ''}" onclick="sortLeaderboard('owner')">Participant<span class="sort-icon"></span></th>`;
+  tNames.forEach(t => {
+    const done = compSet.has(t);
+    const sc = lbSortCol === t ? (lbSortDir === -1 ? ' sort-desc' : ' sort-asc') : '';
+    html += `<th class="num sortable${done ? '' : ' upcoming'}${sc}" onclick="sortLeaderboard('${t.replace(/'/g, "\'")}')">${t}<br><small>${(tournaments.find(x=>x.name===t)||{}).dates||''}</small><span class="sort-icon"></span></th>`;
+  });
+  const totalSc = lbSortCol === '__total__' ? (lbSortDir === -1 ? ' sort-desc' : ' sort-asc') : '';
+  html += `<th class="num sortable${totalSc}" onclick="sortLeaderboard('__total__')">Season Total<span class="sort-icon"></span></th>`;
+  html += '</tr></thead><tbody>';
 
-    bodyRows.forEach(row => {
-        const pick  = (row[wIdx + 1] || '').trim();
-        const isWin = tournamentWinner && pick &&
-                      pick.toLowerCase() === tournamentWinner.toLowerCase();
-        t += '<tr>';
-        t += `<td class="c-name">${row[0]}</td>`;
-        t += `<td>${pick || '<span class="zero">—</span>'}</td>`;
-        t += `<td>${isWin ? '<span class="badge badge-win">✓ Winner</span>' : ''}</td>`;
-        t += '</tr>';
+  sorted.forEach((s, i) => {
+    // Find original rank by total
+    const origRank = standings.filter(x => x.owner && x.owner !== '0').findIndex(x => x.owner === s.owner);
+    const rc = rankClass(origRank);
+    html += `<tr><td class="${rc}">${origRank + 1}</td><td>${s.owner}</td>`;
+    tNames.forEach(t => {
+      const v = s.weekly[t] || 0;
+      const player = (picks[s.owner] || {})[t] || '';
+      if (!compSet.has(t)) {
+        // Future tournament — show pick if available
+        html += `<td class="num"><div class="pick-cell"><span class="pick-player">${player || '—'}</span></div></td>`;
+      } else {
+        const amtCls = v === 0 ? 'zero' : '';
+        html += `<td class="num"><div class="pick-cell">
+          <span class="pick-player">${player || '—'}</span>
+          <span class="pick-amount ${amtCls}">${v ? fmt(v) : (player ? '$0' : '—')}</span>
+        </div></td>`;
+      }
+    });
+    html += `<td class="num" style="font-weight:700">${fmt(s.total)}</td></tr>`;
+  });
+
+  html += '</tbody>';
+  tbl.innerHTML = html;
+}
+
+// ── Payouts ───────────────────────────────────────────────────────────────────
+let payoutView = 'week';
+
+function setPayoutView(v) {
+  payoutView = v;
+  document.getElementById('btn-by-week').classList.toggle('active', v === 'week');
+  document.getElementById('btn-by-player').classList.toggle('active', v === 'player');
+  buildPayouts();
+}
+
+function buildPayouts() {
+  const tbl = document.getElementById('payout-table');
+  const compTourneys = tournaments.filter(t => completed.includes(t.name));
+
+  if (payoutView === 'week') {
+    // Rows = participants, columns = completed tournaments
+    let html = '<thead><tr><th>Participant</th>';
+    compTourneys.forEach(t => {
+      html += `<th class="num">${t.name}<br><small>${t.dates}</small></th>`;
+    });
+    html += '<th class="num">Total</th></tr></thead><tbody>';
+
+    const owners = Object.keys(picks).sort();
+    owners.forEach(owner => {
+      html += `<tr><td>${owner}</td>`;
+      let rowTotal = 0;
+      compTourneys.forEach(t => {
+        const player = (picks[owner] || {})[t.name] || '';
+        const earnings = (results[t.name] || {})[player] || 0;
+        rowTotal += earnings;
+        const cls = earnings === 0 ? 'num zero' : 'num';
+        const label = earnings ? fmt(earnings) : (player ? `<span style="color:#aaa;font-style:italic">${player}</span>` : '—');
+        html += `<td class="${cls}" title="${player}">${label}</td>`;
+      });
+      html += `<td class="num" style="font-weight:700">${fmt(rowTotal)}</td></tr>`;
+    });
+    html += '</tbody>';
+    tbl.innerHTML = html;
+
+  } else {
+    // Rows = PGA players picked, columns = participants who picked them
+    // Build: player → {tournament, owner, earnings}
+    const playerMap = {};  // player -> array of pick objects
+    const owners = Object.keys(picks).sort();
+
+    compTourneys.forEach(t => {
+      const res = results[t.name] || {};
+      owners.forEach(owner => {
+        const player = (picks[owner] || {})[t.name] || '';
+        if (!player) return;
+        if (!playerMap[player]) playerMap[player] = [];
+        const earnings = res[player] || 0;
+        playerMap[player].push({ owner: owner, tournament: t.name, earnings: earnings });
+      });
     });
 
-    t += '</tbody></table>';
-    document.getElementById('picks-body').innerHTML = t;
-}
-
-// ═══════════════════════════════════════════════════════════
-//  WEEKLY WINNERS
-//
-//  Expected Weekly Winners layout:
-//    Row 0  → headers: ["Week", "Tournament", "Winner (Golfer)", "Team That Won", "Prize"]
-//    Row 1+ → data, one row per completed week
-//
-//  Adjust column indices below if your sheet uses a different order.
-// ═══════════════════════════════════════════════════════════
-function renderWeeklyWinners() {
-    const rows = (cache.weeklyWinners || []).filter(r => r.some(Boolean));
-    if (rows.length < 2) {
-        document.getElementById('winners-body').innerHTML = '<div class="msg">No results recorded yet.</div>';
-        return;
-    }
-
-    const headers  = rows[0];
-    const body     = rows.slice(1).filter(r => r[0]);
-
-    // Count unique winners for stat box
-    const teamWins = {};
-    body.forEach(r => {
-        const team = (r[3] || '').trim(); // Col 3 = team that won
-        if (team) teamWins[team] = (teamWins[team] || 0) + 1;
-    });
-    const topWinner = Object.entries(teamWins).sort((a, b) => b[1] - a[1])[0];
-    const totalPaid = body.reduce((s, r) => s + toNum(r[4]), 0); // Col 4 = prize
-
-    document.getElementById('winners-stats').innerHTML = `
-        <div class="stat-box"><div class="val">${body.length}</div><div class="lbl">Tournaments Complete</div></div>
-        <div class="stat-box gold"><div class="val">${topWinner ? topWinner[0] : '—'}</div><div class="lbl">Most Bonus Wins</div></div>
-        <div class="stat-box"><div class="val">$${Math.round(totalPaid).toLocaleString()}</div><div class="lbl">Bonuses Paid</div></div>
-    `;
-
-    // Table
-    let t = '<table><thead><tr>';
-    headers.filter(Boolean).forEach((h, i) => {
-        const isRight = i >= 4; // prize column → right-align
-        t += `<th${isRight ? ' class="c-right"' : ''}>${h}</th>`;
-    });
-    t += '</tr></thead><tbody>';
-
-    body.forEach(row => {
-        t += '<tr>';
-        row.forEach((cell, i) => {
-            const isMoney = i >= 4 && toNum(cell) > 0;
-            const content = isMoney ? fmtMoney(cell) : (cell || '<span class="zero">—</span>');
-            t += `<td${i >= 4 ? ' class="c-right"' : i === 3 ? ' class="c-name"' : ''}>${content}</td>`;
-        });
-        t += '</tr>';
+    // Sort players by total earnings desc
+    const playerList = Object.keys(playerMap).sort((a, b) => {
+      const ta = playerMap[a].reduce((s, x) => s + x.earnings, 0);
+      const tb = playerMap[b].reduce((s, x) => s + x.earnings, 0);
+      return tb - ta;
     });
 
-    t += '</tbody></table>';
-    document.getElementById('winners-body').innerHTML = t;
-}
+    let html = '<thead><tr><th>PGA Player</th><th>Tournament</th><th>Earnings</th><th>Picked By</th></tr></thead><tbody>';
+    playerList.forEach(player => {
+      const entries = playerMap[player];
+      // Group by tournament
+      const byTourney = {};
+      entries.forEach(e => {
+        if (!byTourney[e.tournament]) byTourney[e.tournament] = { earnings: e.earnings, owners: [] };
+        byTourney[e.tournament].owners.push(e.owner);
+      });
 
-// ═══════════════════════════════════════════════════════════
-//  POOL INFO
-//
-//  Reads the Pool Setup tab (key–value pairs) and shows
-//  buy-in, payout splits, and the roster of participants.
-// ═══════════════════════════════════════════════════════════
-function renderInfo() {
-    const rows = (cache.setup || []).filter(r => r.some(Boolean));
-    const el   = document.getElementById('info-body');
-
-    if (!rows.length) {
-        el.innerHTML = '<div class="msg">No pool configuration found.</div>';
-        return;
-    }
-
-    // Build full table from Pool Setup
-    let setupHtml = '<table class="info-kv"><tbody>';
-    rows.forEach(row => {
-        if (!row[0]) return;
-        const key  = row[0];
-        const rest = row.slice(1).filter(Boolean).join(' · ');
-        const isPayout = /payout|split|prize|winner|bonus/i.test(key);
-        setupHtml += `<tr${isPayout ? ' class="payout-row"' : ''}>`;
-        setupHtml += `<td>${key}</td><td>${rest || '—'}</td>`;
-        setupHtml += '</tr>';
+      const tourneys = Object.keys(byTourney);
+      tourneys.forEach((tourney, ti) => {
+        const {earnings, owners: ow} = byTourney[tourney];
+        const cls = earnings === 0 ? 'zero' : '';
+        html += `<tr>`;
+        if (ti === 0) html += `<td rowspan="${tourneys.length}" style="font-weight:600">${player}</td>`;
+        html += `<td>${tourney}</td>`;
+        html += `<td class="num ${cls}">${earnings ? fmt(earnings) : '—'}</td>`;
+        html += `<td>${ow.join(', ')}</td></tr>`;
+      });
     });
-    setupHtml += '</tbody></table>';
-
-    // Participant count from standings if available
-    const pCount = cache.standings ? cache.standings.slice(1).filter(r => r[0]).length : null;
-
-    // Stat boxes
-    let stats = '';
-    if (pCount) stats += `<div class="stat-box"><div class="val">${pCount}</div><div class="lbl">Teams</div></div>`;
-    stats += `<div class="stat-box gold"><div class="val">$100</div><div class="lbl">Buy-In Per Team</div></div>`;
-    if (pCount) stats += `<div class="stat-box"><div class="val">$${(pCount * 100).toLocaleString()}</div><div class="lbl">Total Pot</div></div>`;
-
-    el.innerHTML = `
-        <div class="stat-strip">${stats}</div>
-
-        <div class="card">
-            <div class="card-hdr">💰 Pool Configuration</div>
-            <div class="card-body">${setupHtml}</div>
-        </div>
-
-        <div class="card">
-            <div class="card-hdr">📋 How It Works</div>
-            <div class="card-body">
-                <ol class="how-list">
-                    <li>Each team pays a <strong>$100 buy-in</strong> before the season starts.</li>
-                    <li>Picks are due <strong>Wednesday 9 PM</strong> before each tournament. Each team selects one pro golfer.</li>
-                    <li>You can only use each golfer <strong>once per season</strong> (One and Done).</li>
-                    <li>If your golfer wins the tournament, your team earns the <strong>weekly bonus</strong>.</li>
-                    <li>Season-long earnings are tracked in Standings via each golfer's <strong>Official Money</strong>.</li>
-                    <li>The <strong>Tour Championship</strong> counts toward season totals but pays no weekly bonus.</li>
-                    <li>Player names must <strong>exactly match</strong> between Picks and Results (use pgatour.com spelling).</li>
-                </ol>
-            </div>
-        </div>
-    `;
+    html += '</tbody>';
+    tbl.innerHTML = html;
+  }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  INIT + REFRESH
-// ═══════════════════════════════════════════════════════════
-function stamp() {
-    document.getElementById('last-updated').textContent =
-        'Updated ' + new Date().toLocaleString('en-CA', {
-            weekday:'short', month:'short', day:'numeric',
-            hour:'2-digit', minute:'2-digit'
-        });
-}
+// ── Weekly Winners ────────────────────────────────────────────────────────────
+function buildWeeklyWinners() {
+  const grid = document.getElementById('ww-grid');
+  let html = '';
 
-async function refreshAll() {
-    // Clear all caches so next load re-fetches
-    Object.keys(cache).forEach(k => delete cache[k]);
-    Object.keys(loaded).forEach(k => delete loaded[k]);
-    picksRows = null;
-    stamp();
+  weeklyWinners.forEach(w => {
+    const hasWinner = w.winner && w.winner !== '0';
+    const hasPickers = w.pickers && w.pickers.length > 0;
+    const isUpcoming = !hasWinner;
+    const noPickBonus = w.bonus === 'No Winner Picked' || w.bonus === 'N/A — No Weekly Payout';
 
-    // Re-render the active pane
-    const active = document.querySelector('.tab-pane.active');
-    const btn    = document.querySelector('.tab-btn.active');
-    if (active && btn) {
-        const pane = active.id;
-        // Reset the active pane content
-        const resetMap = {
-            standings: ['standings-body', 'standings-stats'],
-            picks    : ['picks-body'],
-            winners  : ['winners-body', 'winners-stats'],
-            info     : ['info-body'],
-        };
-        (resetMap[pane] || []).forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.innerHTML = '<div class="msg"><span class="spinner"></span>Refreshing…</div>';
-        });
-        await loadAndRender(pane);
+    let bonusText = '';
+    if (noPickBonus) {
+      bonusText = `<div class="no-winner-label">${w.bonus}</div>`;
+    } else if (typeof w.bonus === 'number' && w.bonus > 0) {
+      const bonusAmt = '$' + w.bonus.toLocaleString('en-CA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      bonusText = `<div class="bonus">Pool Bonus: ${bonusAmt} / person</div>`;
     }
-}
 
-async function init() {
-    stamp();
-    // Pre-load standings + weeklyWinners (needed by Picks tab too)
-    try {
-        await Promise.all([fetchTab('standings'), fetchTab('weeklyWinners')]);
-        renderStandings();
-        loaded['standings'] = true;
-    } catch (e) {
-        setErr('standings', e.message);
+    let pickerText = '';
+    if (hasPickers) {
+      pickerText = `<div class="pickers">🎉 ${w.pickers.join(', ')}</div>`;
     }
+
+    const cardClass = (!hasWinner || !hasPickers) ? 'ww-card no-pick' : 'ww-card';
+
+    html += `
+    <div class="${cardClass}">
+      <div class="wk">Week ${w.week} · ${w.dates}</div>
+      <div class="tourney">${w.tournament}</div>
+      ${hasWinner
+        ? `<div class="winner-name">🏆 ${w.winner}</div>${bonusText}${pickerText}`
+        : `<div class="no-winner-label">Upcoming / No result yet</div>`
+      }
+    </div>`;
+  });
+
+  grid.innerHTML = html;
 }
 
-init();
+// ── Init ──────────────────────────────────────────────────────────────────────
+document.getElementById('last-updated').textContent =
+  'Updated: ' + new Date().toLocaleDateString('en-CA', {year:'numeric',month:'short',day:'numeric'});
+
+buildLeaderboard();
+buildPayouts();
+buildWeeklyWinners();
 </script>
 </body>
 </html>
