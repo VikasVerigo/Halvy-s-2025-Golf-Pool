@@ -39,14 +39,34 @@
 
   /* ── Tables ── */
   .table-wrap { overflow-x: auto; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.88rem; }
-  thead th { background: var(--green); color: #fff; padding: 10px 12px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; font-size: 0.88rem; }
+  thead th { background: var(--green); color: #fff; padding: 10px 12px; text-align: left; white-space: nowrap; position: sticky; top: 0; z-index: 2; }
   thead th.num { text-align: right; }
   tbody tr:nth-child(even) { background: var(--row-alt); }
   tbody tr:hover { background: #dff0df; }
   tbody td { padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
   tbody td.num { text-align: right; font-variant-numeric: tabular-nums; }
   tbody td.zero { color: #bbb; }
+
+  /* ── Frozen columns (Rank + Participant) ── */
+  td.col-rank {
+    position: sticky; left: 0; z-index: 3;
+    background: #fff;
+  }
+  th.col-rank { position: sticky; left: 0; z-index: 4; min-width: 52px; background: var(--green); }
+  td.col-owner {
+    position: sticky; left: 52px; z-index: 3;
+    background: #fff;
+  }
+  th.col-owner { position: sticky; left: 52px; z-index: 4; min-width: 150px; background: var(--green); }
+  /* Shadow on right edge of frozen area */
+  td.col-owner, th.col-owner {
+    box-shadow: 3px 0 6px -2px rgba(0,0,0,.15);
+  }
+  tbody tr:nth-child(even) td.col-rank,
+  tbody tr:nth-child(even) td.col-owner { background: var(--row-alt); }
+  tbody tr:hover td.col-rank,
+  tbody tr:hover td.col-owner { background: #dff0df; }
 
   /* Rank medal colours */
   .rank-1 { color: #c9a227; font-weight: 700; }
@@ -78,7 +98,7 @@
 
   /* ── Sortable headers ── */
   thead th.sortable { cursor: pointer; user-select: none; }
-  thead th.sortable:hover { background: #14482400; filter: brightness(1.2); }
+  thead th.sortable:hover { background: #2d7a45; }
   thead th .sort-icon { margin-left: 4px; opacity: .5; font-size: 0.75em; }
   thead th.sort-asc .sort-icon::after { content: ' ▲'; opacity: 1; }
   thead th.sort-desc .sort-icon::after { content: ' ▼'; opacity: 1; }
@@ -96,6 +116,35 @@
 
   /* ── Totals row ── */
   tr.totals-row td { font-weight: 700; background: #e8f5e9; border-top: 2px solid var(--green); }
+
+  /* ── Pool Setup ── */
+  .setup-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-top: 8px; }
+  .setup-card {
+    background: #fff; border-radius: 10px; padding: 20px 22px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.08);
+  }
+  .setup-card h3 {
+    font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--green); margin-bottom: 14px; border-bottom: 2px solid var(--border); padding-bottom: 6px;
+  }
+  .config-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+  .config-row:last-child { border-bottom: none; }
+  .config-label { color: var(--muted); }
+  .config-val { font-weight: 600; }
+  .payout-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+  .payout-row:last-child { border-bottom: none; }
+  .payout-label { color: var(--muted); }
+  .payout-amount { font-weight: 700; color: var(--green); font-size: 1rem; }
+  .totals-bar {
+    background: var(--green); color: #fff; border-radius: 10px; padding: 16px 22px;
+    display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .totals-bar .stat { display: flex; flex-direction: column; gap: 2px; }
+  .totals-bar .stat-label { font-size: 0.75rem; opacity: .75; text-transform: uppercase; letter-spacing: .06em; }
+  .totals-bar .stat-val { font-size: 1.4rem; font-weight: 700; }
+  .status-paid { color: #1a7a3a; font-weight: 700; }
+  .status-half { color: #c97a00; font-weight: 700; }
+  .status-unpaid { color: #c0392b; font-weight: 700; }
 
   /* ── Mobile ── */
   @media (max-width: 600px) {
@@ -115,12 +164,17 @@
 </header>
 
 <nav>
-  <button class="active" onclick="showTab('leaderboard', this)">🏆 Leaderboard</button>
+  <button class="active" onclick="showTab('pool-setup', this)">📋 Pool Setup</button>
+  <button onclick="showTab('leaderboard', this)">🏆 Leaderboard</button>
   <button onclick="showTab('payouts', this)">💰 Payouts by Week</button>
   <button onclick="showTab('weekly-winners', this)">🎯 Weekly Winners</button>
 </nav>
 
-<div id="leaderboard" class="panel active">
+<div id="pool-setup" class="panel active">
+  <div id="pool-setup-content"></div>
+</div>
+
+<div id="leaderboard" class="panel">
   <div class="table-wrap" style="margin-top:8px">
     <table id="lb-table"></table>
   </div>
@@ -148,6 +202,7 @@ const results      = {"Masters": {"Rory McIlroy": 4500000, "_winner": "Rory McIl
 const tournaments  = [{"name": "Masters", "dates": "Apr 9-12"}, {"name": "RBC Heritage", "dates": "Apr 16-19"}, {"name": "Zurich Classic", "dates": "Apr 23-26"}, {"name": "Cadillac", "dates": "Apr 30-May 3"}, {"name": "Truist", "dates": "May 7-10"}, {"name": "PGA Championship", "dates": "May 14-17"}, {"name": "Byron Nelson", "dates": "May 21-24"}, {"name": "Charles Schwab", "dates": "May 28-31"}, {"name": "Memorial", "dates": "Jun 4-7"}, {"name": "Canadian Open", "dates": "Jun 11-14"}, {"name": "US Open", "dates": "Jun 18-21"}, {"name": "Travellers", "dates": "Jun 25-28"}, {"name": "John Deere", "dates": "Jul 2-5"}, {"name": "Scottish Open", "dates": "Jul 9-12"}, {"name": "The Open", "dates": "Jul 16-19"}, {"name": "3M Open", "dates": "Jul 23-26"}, {"name": "Rocket Mortgage", "dates": "Jul 30-Aug 2"}, {"name": "Wyndham", "dates": "Aug 6-9"}, {"name": "FedEx St Jude", "dates": "Aug 13-17"}, {"name": "BMW Championship", "dates": "Aug 20-23"}, {"name": "Tour Championship", "dates": "Aug 27-30"}];
 const weeklyWinners= [{"week": 1, "tournament": "Masters", "dates": "Apr 9-12", "winner": "Rory McIlroy", "num_winners": 1, "bonus": 58, "pickers": ["Thomas Rippon"]}, {"week": 2, "tournament": "RBC Heritage", "dates": "Apr 16-19", "winner": "Matt Fitzpatrick", "num_winners": 4, "bonus": 14.5, "pickers": ["Wes Wong", "Christopher Foulds", "Rod Langtry", "Lanny Gregory"]}, {"week": 3, "tournament": "Zurich Classic", "dates": "Apr 23-26", "winner": "Alex Fitzpatrick", "num_winners": 4, "bonus": 14.5, "pickers": ["Deb H", "Lanny Gregory", "Alpha 1", "Surfer Dude"]}, {"week": 4, "tournament": "Cadillac", "dates": "Apr 30-May 3", "winner": "Cameron Young", "num_winners": 7, "bonus": 8.285714285714286, "pickers": ["Christopher Foulds", "Alpha 1", "Ron Ilmer", "Darryl Hawkes", "Brad Currie", "Shane Foulds", "Surfer Dude"]}, {"week": 5, "tournament": "Truist", "dates": "May 7-10", "winner": "K Reitan", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 6, "tournament": "PGA Championship", "dates": "May 14-17", "winner": "Aaron Rai ", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 7, "tournament": "Byron Nelson", "dates": "May 21-24", "winner": "Wyndham Clark", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 8, "tournament": "Charles Schwab", "dates": "May 28-31", "winner": "Russell Henley", "num_winners": 1, "bonus": 58, "pickers": ["Brad Currie"]}, {"week": 9, "tournament": "Memorial", "dates": "Jun 4-7", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 10, "tournament": "Canadian Open", "dates": "Jun 11-14", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 11, "tournament": "US Open", "dates": "Jun 18-21", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 12, "tournament": "Travellers", "dates": "Jun 25-28", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 13, "tournament": "John Deere", "dates": "Jul 2-5", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 14, "tournament": "Scottish Open", "dates": "Jul 9-12", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 15, "tournament": "The Open", "dates": "Jul 16-19", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 16, "tournament": "3M Open", "dates": "Jul 23-26", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 17, "tournament": "Rocket Mortgage", "dates": "Jul 30-Aug 2", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 18, "tournament": "Wyndham", "dates": "Aug 6-9", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 19, "tournament": "FedEx St Jude", "dates": "Aug 13-17", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 20, "tournament": "BMW Championship", "dates": "Aug 20-23", "winner": "", "num_winners": 0, "bonus": "No Winner Picked", "pickers": []}, {"week": 21, "tournament": "Tour Championship", "dates": "Aug 27-30", "winner": "", "num_winners": 0, "bonus": "N/A \u2014 No Weekly Payout", "pickers": []}];
 const completed    = ["Masters", "RBC Heritage", "Zurich Classic", "Cadillac", "Truist", "PGA Championship", "Byron Nelson", "Charles Schwab"];
+const poolSetup    = {"config": {"Buy-In (Entry Fee)": "$200", "First Payment Due": "$100 (before Masters)", "Second Payment Due": "$100 (before US Open)", "Weekly Winner Bonus": "1% of total pool", "1st Place (Year-End)": "40% of pool", "2nd Place (Year-End)": "25% of pool", "3rd Place (Year-End)": "15% of pool", "Weekly Bonuses (Total)": "20% of pool", "4th place": "Remnants"}, "entries": [{"num": 1, "name": "Halvy", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 2, "name": "Franco", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 3, "name": "Mark Lee", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 4, "name": "Trevor W", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 5, "name": "Paul Anaka", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 6, "name": "Thomas Rippon", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 7, "name": "Derek B", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 8, "name": "Vikas 1", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 9, "name": "Vikas 2", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 10, "name": "Wes Wong", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 11, "name": "Deb H", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 12, "name": "George Kozlovic", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 13, "name": "Jason Gigliotti", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 14, "name": "Christopher Foulds", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 15, "name": "Rod Langtry", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 16, "name": "Geoff Wishlaw", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 17, "name": "Wonger 1", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 18, "name": "Lanny Gregory", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 19, "name": "Russ Davidson", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 20, "name": "David Rockliff", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 21, "name": "Alpha 1", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 22, "name": "Ron Ilmer", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 23, "name": "The Randy Smith", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 24, "name": "Darryl Hawkes", "pay1": 100, "pay2": 0, "status": "\u00bd PAID"}, {"num": 25, "name": "Brad Currie", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 26, "name": "Karn Dhillon", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 27, "name": "Shane Foulds", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 28, "name": "Surfer Dude", "pay1": 100, "pay2": 100, "status": "PAID"}, {"num": 29, "name": "Assman", "pay1": 100, "pay2": 100, "status": "PAID"}], "totals": {"entries": 29, "pool_size": 5800}, "payouts": [{"label": "1st Place (40%)", "amount": 2320}, {"label": "2nd Place (25%)", "amount": 1450}, {"label": "3rd Place (15%)", "amount": 870}, {"label": "Weekly Bonuses (20% / 20 weeks)", "amount": 1160}, {"label": "Per-Week Bonus Amount", "amount": 58}]};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function fmt(n) {
@@ -184,58 +239,61 @@ function sortLeaderboard(col) {
   buildLeaderboard();
 }
 
+function sortClass(col) {
+  if (lbSortCol !== col) return '';
+  return lbSortDir === -1 ? ' sort-desc' : ' sort-asc';
+}
+
 // ── Leaderboard ───────────────────────────────────────────────────────────────
 function buildLeaderboard() {
   const tbl = document.getElementById('lb-table');
   const tNames = tournaments.map(t => t.name);
   const compSet = new Set(completed);
 
-  // Sort a copy of standings
-  const sorted = [...standings].filter(s => s.owner && s.owner !== '0');
+  // Base list with fixed season-total rank pre-computed
+  const base = standings.filter(s => s.owner && s.owner !== '0');
+  const rankMap = {};
+  base.forEach((s, i) => { rankMap[s.owner] = i + 1; });
+
+  // Sort a copy
+  const sorted = [...base];
   sorted.sort((a, b) => {
-    let va, vb;
-    if (lbSortCol === '__total__') {
-      va = a.total; vb = b.total;
+    if (lbSortCol === '__rank__' || lbSortCol === '__total__') {
+      return (b.total - a.total) * lbSortDir;
     } else if (lbSortCol === 'owner') {
-      va = a.owner.toLowerCase(); vb = b.owner.toLowerCase();
+      const va = a.owner.toLowerCase(), vb = b.owner.toLowerCase();
       return va < vb ? -lbSortDir : va > vb ? lbSortDir : 0;
     } else {
-      va = a.weekly[lbSortCol] || 0;
-      vb = b.weekly[lbSortCol] || 0;
+      return ((b.weekly[lbSortCol] || 0) - (a.weekly[lbSortCol] || 0)) * lbSortDir;
     }
-    return (vb - va) * lbSortDir;
   });
 
   // Header
   let html = '<thead><tr>';
-  html += '<th>Rank</th>';
-  html += `<th class="sortable${lbSortCol === 'owner' ? (lbSortDir === 1 ? ' sort-asc' : ' sort-desc') : ''}" onclick="sortLeaderboard('owner')">Participant<span class="sort-icon"></span></th>`;
+  html += `<th class="col-rank sortable${sortClass('__rank__')}" onclick="sortLeaderboard('__rank__')">#<span class="sort-icon"></span></th>`;
+  html += `<th class="col-owner sortable${sortClass('owner')}" onclick="sortLeaderboard('owner')">Participant<span class="sort-icon"></span></th>`;
   tNames.forEach(t => {
     const done = compSet.has(t);
-    const sc = lbSortCol === t ? (lbSortDir === -1 ? ' sort-desc' : ' sort-asc') : '';
-    html += `<th class="num sortable${done ? '' : ' upcoming'}${sc}" onclick="sortLeaderboard('${t.replace(/'/g, "\'")}')">${t}<br><small>${(tournaments.find(x=>x.name===t)||{}).dates||''}</small><span class="sort-icon"></span></th>`;
+    const dates = (tournaments.find(x => x.name === t) || {}).dates || '';
+    html += `<th class="num sortable${done ? '' : ' upcoming'}${sortClass(t)}" onclick="sortLeaderboard('${t.replace(/'/g, "\'")}')">${t}<br><small>${dates}</small><span class="sort-icon"></span></th>`;
   });
-  const totalSc = lbSortCol === '__total__' ? (lbSortDir === -1 ? ' sort-desc' : ' sort-asc') : '';
-  html += `<th class="num sortable${totalSc}" onclick="sortLeaderboard('__total__')">Season Total<span class="sort-icon"></span></th>`;
+  html += `<th class="num sortable${sortClass('__total__')}" onclick="sortLeaderboard('__total__')">Season Total<span class="sort-icon"></span></th>`;
   html += '</tr></thead><tbody>';
 
-  sorted.forEach((s, i) => {
-    // Find original rank by total
-    const origRank = standings.filter(x => x.owner && x.owner !== '0').findIndex(x => x.owner === s.owner);
-    const rc = rankClass(origRank);
-    html += `<tr><td class="${rc}">${origRank + 1}</td><td>${s.owner}</td>`;
+  sorted.forEach(s => {
+    const rank = rankMap[s.owner];
+    const rc = rankClass(rank - 1);
+    html += `<tr>`;
+    html += `<td class="col-rank ${rc}">${rank}</td>`;
+    html += `<td class="col-owner">${s.owner}</td>`;
     tNames.forEach(t => {
       const v = s.weekly[t] || 0;
       const player = (picks[s.owner] || {})[t] || '';
       if (!compSet.has(t)) {
-        // Future tournament — show pick if available
         html += `<td class="num"><div class="pick-cell"><span class="pick-player">${player || '—'}</span></div></td>`;
       } else {
         const amtCls = v === 0 ? 'zero' : '';
-        html += `<td class="num"><div class="pick-cell">
-          <span class="pick-player">${player || '—'}</span>
-          <span class="pick-amount ${amtCls}">${v ? fmt(v) : (player ? '$0' : '—')}</span>
-        </div></td>`;
+        html += `<td class="num"><div class="pick-cell"><span class="pick-player">${player || '—'}</span><span class="pick-amount ${amtCls}">${v ? fmt(v) : (player ? '$0' : '—')}</span></div></td>`;
       }
     });
     html += `<td class="num" style="font-weight:700">${fmt(s.total)}</td></tr>`;
@@ -374,10 +432,79 @@ function buildWeeklyWinners() {
   grid.innerHTML = html;
 }
 
+// ── Pool Setup ────────────────────────────────────────────────────────────────
+function buildPoolSetup() {
+  const el = document.getElementById('pool-setup-content');
+  const s = poolSetup;
+  const t = s.totals;
+
+  // Totals bar
+  const paidCount  = s.entries.filter(e => e.status === 'PAID').length;
+  const halfCount  = s.entries.filter(e => e.status === '½ PAID').length;
+  const collected  = t.collected || 0;
+  const poolSize   = t.pool_size || 0;
+
+  let html = `
+  <div class="totals-bar">
+    <div class="stat"><span class="stat-label">Participants</span><span class="stat-val">${t.entries || 0}</span></div>
+    <div class="stat"><span class="stat-label">Total Pool</span><span class="stat-val">$${poolSize.toLocaleString('en-CA')}</span></div>
+    <div class="stat"><span class="stat-label">Collected</span><span class="stat-val">$${collected.toLocaleString('en-CA')}</span></div>
+    <div class="stat"><span class="stat-label">Fully Paid</span><span class="stat-val">${paidCount}</span></div>
+    <div class="stat"><span class="stat-label">½ Paid</span><span class="stat-val">${halfCount}</span></div>
+  </div>
+  <div class="setup-grid">`;
+
+  // Card 1: Pool Rules
+  html += `<div class="setup-card"><h3>Pool Rules</h3>`;
+  Object.entries(s.config).forEach(([k, v]) => {
+    html += `<div class="config-row"><span class="config-label">${k}</span><span class="config-val">${v}</span></div>`;
+  });
+  html += `</div>`;
+
+  // Card 2: Payout Breakdown
+  html += `<div class="setup-card"><h3>Payout Breakdown ($${poolSize.toLocaleString('en-CA')} pool)</h3>`;
+  s.payouts.forEach(p => {
+    const amt = typeof p.amount === 'number' ? fmt(p.amount) : p.amount;
+    html += `<div class="payout-row"><span class="payout-label">${p.label}</span><span class="payout-amount">${amt}</span></div>`;
+  });
+  html += `</div>`;
+
+  html += `</div>`; // close setup-grid
+
+  // Participants table
+  html += `
+  <div class="table-wrap" style="margin-top:20px">
+  <table>
+    <thead><tr>
+      <th>#</th><th>Participant</th>
+      <th class="num">Payment 1<br><small>$100</small></th>
+      <th class="num">Payment 2<br><small>$100</small></th>
+      <th>Status</th>
+    </tr></thead>
+    <tbody>`;
+
+  s.entries.forEach(e => {
+    const sc = e.status === 'PAID' ? 'status-paid' : e.status === '½ PAID' ? 'status-half' : 'status-unpaid';
+    const p1 = e.pay1 ? `<span style="color:#1a7a3a">${e.pay1}</span>` : '<span style="color:#bbb">—</span>';
+    const p2 = e.pay2 ? `<span style="color:#1a7a3a">${e.pay2}</span>` : '<span style="color:#bbb">—</span>';
+    html += `<tr>
+      <td>${e.num}</td>
+      <td>${e.name}</td>
+      <td class="num">${p1}</td>
+      <td class="num">${p2}</td>
+      <td><span class="${sc}">${e.status}</span></td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+  el.innerHTML = html;
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 document.getElementById('last-updated').textContent =
   'Updated: ' + new Date().toLocaleDateString('en-CA', {year:'numeric',month:'short',day:'numeric'});
 
+buildPoolSetup();
 buildLeaderboard();
 buildPayouts();
 buildWeeklyWinners();
