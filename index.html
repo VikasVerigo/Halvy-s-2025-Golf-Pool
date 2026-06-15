@@ -53,7 +53,10 @@
     position: sticky; left: 0; z-index: 3;
     background: #fff;
   }
-  th.col-rank { position: sticky; left: 0; z-index: 4; min-width: 52px; background: var(--green); }
+  th.col-rank { position: sticky; left: 0; z-index: 4; min-width: 70px; background: var(--green); }
+  .move-up   { color: #2e7d32; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+  .move-down { color: #c62828; font-size: 0.72rem; font-weight: 700; white-space: nowrap; }
+  .move-same { color: #999;    font-size: 0.72rem; }
   td.col-owner {
     position: sticky; left: 52px; z-index: 3;
     background: #fff;
@@ -406,6 +409,28 @@ function buildLeaderboard() {
   const rankMap = {};
   base.forEach((s, i) => { rankMap[s.owner] = i + 1; });
 
+  // ── Movement: compare rank before vs after the most recent completed tournament ──
+  const lastCompleted = completed.length > 0 ? completed[completed.length - 1] : null;
+  const prevRankMap = {};
+  if (lastCompleted) {
+    const prevTotals = base.map(s => ({
+      owner: s.owner,
+      prev: s.total - (s.weekly[lastCompleted] || 0)
+    }));
+    prevTotals.sort((a, b) => b.prev - a.prev);
+    prevTotals.forEach((s, i) => { prevRankMap[s.owner] = i + 1; });
+  }
+
+  function moveBadge(owner) {
+    if (!lastCompleted || prevRankMap[owner] == null) return '';
+    const curr = rankMap[owner];
+    const prev = prevRankMap[owner];
+    const diff = prev - curr;  // positive = moved up
+    if (diff > 0)  return `<span class="move-up">▲${diff}</span>`;
+    if (diff < 0)  return `<span class="move-down">▼${Math.abs(diff)}</span>`;
+    return `<span class="move-same">—</span>`;
+  }
+
   // Sort a copy
   const sorted = [...base];
   sorted.sort((a, b) => {
@@ -435,7 +460,7 @@ function buildLeaderboard() {
     const rank = rankMap[s.owner];
     const rc = rankClass(rank - 1);
     html += `<tr>`;
-    html += `<td class="col-rank ${rc}">${rank}</td>`;
+    html += `<td class="col-rank ${rc}" style="font-size:0.85rem">${rank} ${moveBadge(s.owner)}</td>`;
     html += `<td class="col-owner">${s.owner}</td>`;
     tNames.forEach(t => {
       const v = s.weekly[t] || 0;
